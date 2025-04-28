@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Global - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#WPubsubClient">WPubsubClient</a></li><li><a href="global.html#WPubsubServer">WPubsubServer</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Global</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        
+            
+        
+        </h2>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+            
+
+            
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="WPubsubClient"><span class="type-signature"></span>WPubsubClient<span class="signature">(opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>建立一個 MQTT 客戶端，支援持久連線、Token 驗證、自動重連、訂閱與發佈功能。</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="WPubsubClient.mjs.html">WPubsubClient.mjs</a>, <a href="WPubsubClient.mjs.html#line103">line 103</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>import w from 'wsemi'import WPubsubClient from './src/WPubsubClient.mjs'let test = async () => {    let pm = w.genPm()    let ms = []    let clientId = 'id-for-client'    let opt = {        port: 8080,        token: 'token-for-test',        clientId,    }    let wpc = new WPubsubClient(opt)    let topic = 'task'    wpc.on('connect', () => {        console.log('connect')        ms.push({ clientId: `connect` })    })    wpc.on(topic, (msg) => {        console.log(`topic[${topic}]`, msg.toString())        ms.push({ clientId: `receive topic[${topic}]` })    })    wpc.on('close', () => {        console.log('close')        ms.push({ clientId: `close` })    })    wpc.on('error', (err) => {        console.log('error', err)    })    await wpc.subscribe(topic, 2)        .then((res) => {            console.log('subscribe then', res)            ms.push({ clientId: `subscribe`, subscriptions: JSON.stringify(res) })        })        .catch((err) => {            console.log('subscribe catch', err)        })    await wpc.publish(topic, 'result', 2)        .then((res) => {            console.log('publish then', res)            ms.push({ clientId: `publish`, res })        })        .catch((err) => {            console.log('publish catch', err)        })    setTimeout(async() => {        await wpc.clear()        console.log('ms', ms)        pm.resolve(ms)    }, 5000)    return pm}await test()    .catch((err) => {        console.log(err)    })// => ms [//   { clientId: 'connect' },//   {//     clientId: 'subscribe',//     subscriptions: '[{"topic":"task","qos":2}]'//   },//   { clientId: 'publish', res: 'done' },//   { clientId: 'receive topic[task]' },//   { clientId: 'close' },//   { clientId: 'close' }// ]</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>設定選項</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>'mqtt://localhost'</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>MQTT broker 連線 URL</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>8080</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Broker 連線 port</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>token</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>''</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>連線時用來驗證的 Token</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>clientId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>指定 Client ID，若未指定則自動產生</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeReconnect</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>2000</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>斷線後重新連線的間隔時間（毫秒）</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>傳回一個具有 <code>subscribe</code>、<code>publish</code> 方法與事件的物件 (EventEmitter-like)</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="WPubsubServer"><span class="type-signature"></span>WPubsubServer<span class="signature">(opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>建立一個支援 Token 驗證與 LevelDB 持久化儲存的 MQTT Server (基於 Aedes)。</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="WPubsubServer.mjs.html">WPubsubServer.mjs</a>, <a href="WPubsubServer.mjs.html#line94">line 94</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>import w from 'wsemi'import WPubsubServer from './src/WPubsubServer.mjs'let test = () => {    let pm = w.genPm()    let ms = []    let opt = {        port: 8080,        storage: './data',        tokens: ['token-for-test'],    }    let wps = new WPubsubServer(opt)    wps.on('server-listen', (msg) => {        console.log('server-listen', msg)        ms.push({ 'server-listen': msg })    })    wps.on('client-in', (clientId) => {        console.log('client-in', clientId)        ms.push({ 'client-in': clientId })    })    wps.on('client-out', (clientId) => {        console.log('client-out', clientId)        ms.push({ 'client-out': clientId })    })    wps.on('subscribe', (clientId, subscriptions) => {        console.log('subscribe', clientId, subscriptions)        ms.push({ 'subscribe': clientId, 'subscriptions': JSON.stringify(subscriptions) })    })    wps.on('publish', (clientId, topic, payload, qos) => {        console.log('publish', clientId, topic, payload.toString(), qos)        ms.push({ 'publish': clientId, topic, 'payload': payload.toString(), qos })    })    wps.on('server-error', (err) => {        console.log('server-error', err)    })    wps.on('broker-error', (err) => {        console.log('broker-error', err)    })    wps.on('client-error', (clientId, err) => {        console.log('client-error', clientId, err)    })    setTimeout(async () => {        await wps.clear()        console.log('ms', ms)        pm.resolve(ms)    }, 15000)    return pm}await test()    .catch((err) => {        console.log(err)    })// => ms [//   { 'server-listen': { port: 8080 } },//   { 'client-in': 'id-for-client' },//   {//     subscribe: 'id-for-client',//     subscriptions: '[{"topic":"task","qos":2}]'//   },//   { publish: 'id-for-client', topic: 'task', payload: '"result"', qos: 2 },//   { 'client-out': 'id-for-client' }// ]</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>設定參數物件</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>8080</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>要監聽的 TCP 連接埠 (預設 8080)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>storage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>'./data'</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>持久化資料儲存目錄 (LevelDB 路徑)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tokens</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>[]</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>可接受的連線 token 列表，若為空則允許所有連線</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Aedes broker 實例物件</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> on Mon Apr 28 2025 22:02:41 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

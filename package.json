@@ -1,0 +1,38 @@
+{
+  "name": "w-pubsub",
+  "version": "1.0.0",
+  "main": "dist/w-pubsub.umd.js",
+  "dependencies": {
+    "aedes": "^0.51.3",
+    "aedes-persistence": "^10.0.2",
+    "aedes-persistence-level": "^9.0.0",
+    "aedes-server-factory": "^0.2.1",
+    "level": "^10.0.0",
+    "mqtt": "^5.11.1",
+    "lodash-es": "^4.17.21",
+    "wsemi": "^1.7.89"
+  },
+  "devDependencies": {
+    "w-package-tools": "^1.0.87"
+  },
+  "scripts": {
+    "test": "mocha --parallel --timeout 60000",
+    "deploy": "gh-pages -d docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuda-lyu/w-pubsub.git"
+  },
+  "keywords": [
+    "package",
+    "tool",
+    "pubsub",
+    "aedes",
+    "mqtt",
+    "level",
+    "persistence",
+    "nodejs"
+  ],
+  "author": "yuda-lyu(semisphere)",
+  "license": "MIT"
+}
