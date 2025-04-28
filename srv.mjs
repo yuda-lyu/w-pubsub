@@ -9,7 +9,7 @@ let test = () => {
 
     let opt = {
         port: 8080,
-        storage: './data',
+        storage: './_db',
         tokens: ['token-for-test'],
     }
     let wps = new WPubsubServer(opt)

@@ -18,7 +18,7 @@ import evem from 'wsemi/src/evem.mjs'
  *
  * @param {Object} [opt={}] - 設定參數物件
  * @param {Number} [opt.port=8080] - 要監聽的 TCP 連接埠 (預設 8080)
- * @param {String} [opt.storage='./data'] - 持久化資料儲存目錄 (LevelDB 路徑)
+ * @param {String} [opt.storage='./_db'] - 持久化資料儲存目錄 (LevelDB 路徑)
  * @param {Array} [opt.tokens=[]] - 可接受的連線 token 列表，若為空則允許所有連線
  * @returns {Object} - Aedes broker 實例物件
  * @example
@@ -33,7 +33,7 @@ import evem from 'wsemi/src/evem.mjs'
  *
  *     let opt = {
  *         port: 8080,
- *         storage: './data',
+ *         storage: './_db',
  *         tokens: ['token-for-test'],
  *     }
  *     let wps = new WPubsubServer(opt)
@@ -103,7 +103,7 @@ function WPubsubServer(opt = {}) {
     //storage
     let storage = get(opt, 'storage')
     if (!isestr(storage)) {
-        storage = './data' //LevelDB路徑
+        storage = './_db' //LevelDB路徑
     }
 
     //tokens
