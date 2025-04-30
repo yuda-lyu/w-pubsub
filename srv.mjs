@@ -47,7 +47,7 @@ let test = () => {
         await wps.clear()
         console.log('ms', ms)
         pm.resolve(ms)
-    }, 15000)
+    }, 6000)
 
     return pm
 }
@@ -62,7 +62,7 @@ await test()
 //     subscribe: 'id-for-client',
 //     subscriptions: '[{"topic":"task","qos":2}]'
 //   },
-//   { publish: 'id-for-client', topic: 'task', payload: '"result"', qos: 2 },
+//   { publish: 'id-for-client', topic: 'task', payload: 'result', qos: 2 },
 //   { 'client-out': 'id-for-client' }
 // ]
 

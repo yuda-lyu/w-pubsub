@@ -30,7 +30,7 @@ let test = () => {
 
     let opt = {
         port: 8080,
-        storage: './data',
+        storage: './_db',
         tokens: ['token-for-test'],
     }
     let wps = new WPubsubServer(opt)
@@ -83,7 +83,7 @@ await test()
 //     subscribe: 'id-for-client',
 //     subscriptions: '[{"topic":"task","qos":2}]'
 //   },
-//   { publish: 'id-for-client', topic: 'task', payload: '"result"', qos: 2 },
+//   { publish: 'id-for-client', topic: 'task', payload: 'result', qos: 2 },
 //   { 'client-out': 'id-for-client' }
 // ]
 ```

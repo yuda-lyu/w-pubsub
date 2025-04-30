@@ -199,10 +199,11 @@ function WPubsubClient(opt = {}) {
         //2, 剛好送一次, 保證只送一次且不重複
 
         //payload, 型別僅支援: String, Buffer, Uint8Array, Number, Object(要JSON.stringify)
-        let payload = ''
-        if (!isobj(msg)) {
+        let payload = msg
+        if (isobj(msg)) {
             payload = JSON.stringify(msg)
         }
+        // console.log('msg', msg)
         // console.log('payload', payload)
 
         //pm

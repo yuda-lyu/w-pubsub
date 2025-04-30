@@ -72,7 +72,6 @@ await test()
 //   },
 //   { clientId: 'publish', res: 'done' },
 //   { clientId: 'receive topic[task]' },
-//   { clientId: 'close' },
 //   { clientId: 'close' }
 // ]
 

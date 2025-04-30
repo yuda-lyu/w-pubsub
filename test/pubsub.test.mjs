@@ -54,7 +54,7 @@ describe('pubsub', function() {
                 await wps.clear()
                 // console.log('ms', ms)
                 pm.resolve(ms)
-            }, 5000)
+            }, 6000)
 
             return pm
         }
@@ -69,7 +69,7 @@ describe('pubsub', function() {
         //     subscribe: 'id-for-client',
         //     subscriptions: '[{"topic":"task","qos":2}]'
         //   },
-        //   { publish: 'id-for-client', topic: 'task', payload: '"result"', qos: 2 },
+        //   { publish: 'id-for-client', topic: 'task', payload: 'result', qos: 2 },
         //   { 'client-out': 'id-for-client' }
         // ]
         return ms
@@ -130,7 +130,7 @@ describe('pubsub', function() {
                 await wpc.clear()
                 // console.log('ms', ms)
                 pm.resolve(ms)
-            }, 6000)
+            }, 5000)
 
             return pm
         }
@@ -165,7 +165,7 @@ describe('pubsub', function() {
         return ms
     }
 
-    let ms = [{ 'server-listen': { 'port': 8080 } }, { 'client-in': 'id-for-client' }, { 'subscribe': 'id-for-client', 'subscriptions': '[{"topic":"task","qos":2}]' }, { 'publish': 'id-for-client', 'topic': 'task', 'payload': '"result"', 'qos': 2 }, { 'client-out': 'id-for-client' }, { 'clientId': 'connect' }, { 'clientId': 'subscribe', 'subscriptions': '[{"topic":"task","qos":2}]' }, { 'clientId': 'publish', 'res': 'done' }, { 'clientId': 'receive topic[task]' }, { 'clientId': 'close' }, { 'clientId': 'close' }]
+    let ms = [{ 'server-listen': { 'port': 8080 } }, { 'client-in': 'id-for-client' }, { 'subscribe': 'id-for-client', 'subscriptions': '[{"topic":"task","qos":2}]' }, { 'publish': 'id-for-client', 'topic': 'task', 'payload': 'result', 'qos': 2 }, { 'client-out': 'id-for-client' }, { 'clientId': 'connect' }, { 'clientId': 'subscribe', 'subscriptions': '[{"topic":"task","qos":2}]' }, { 'clientId': 'publish', 'res': 'done' }, { 'clientId': 'receive topic[task]' }, { 'clientId': 'close' }]
 
     it(`should return '${JSON.stringify(ms)}' when run test'`, async function() {
         let r = await test()

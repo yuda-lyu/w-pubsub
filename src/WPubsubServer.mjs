@@ -86,7 +86,7 @@ import evem from 'wsemi/src/evem.mjs'
  * //     subscribe: 'id-for-client',
  * //     subscriptions: '[{"topic":"task","qos":2}]'
  * //   },
- * //   { publish: 'id-for-client', topic: 'task', payload: '"result"', qos: 2 },
+ * //   { publish: 'id-for-client', topic: 'task', payload: 'result', qos: 2 },
  * //   { 'client-out': 'id-for-client' }
  * // ]
  *
