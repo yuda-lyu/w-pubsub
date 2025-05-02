@@ -96,9 +96,13 @@ describe('pubsub', function() {
                 // console.log('connect')
                 ms.push({ clientId: `connect` })
             })
-            wpc.on(topic, (msg) => {
-                // console.log(`topic[${topic}]`, msg.toString())
-                ms.push({ clientId: `receive topic[${topic}]` })
+            // wpc.on(topic, (msg) => {
+            //     // console.log(`topic[${topic}]`, msg.toString())
+            //     ms.push({ clientId: `receive topic[${topic}]` })
+            // })
+            wpc.on('message', ({ topic, message }) => {
+                console.log(`message`, topic, message.toString())
+                ms.push({ clientId: `receive topic[${topic}], message[${message.toString()}]` })
             })
             wpc.on('close', () => {
                 // console.log('close')
@@ -165,7 +169,7 @@ describe('pubsub', function() {
         return ms
     }
 
-    let ms = [{ 'server-listen': { 'port': 8080 } }, { 'client-in': 'id-for-client' }, { 'subscribe': 'id-for-client', 'subscriptions': '[{"topic":"task","qos":2}]' }, { 'publish': 'id-for-client', 'topic': 'task', 'payload': 'result', 'qos': 2 }, { 'client-out': 'id-for-client' }, { 'clientId': 'connect' }, { 'clientId': 'subscribe', 'subscriptions': '[{"topic":"task","qos":2}]' }, { 'clientId': 'publish', 'res': 'done' }, { 'clientId': 'receive topic[task]' }, { 'clientId': 'close' }]
+    let ms = [{ 'server-listen': { 'port': 8080 } }, { 'client-in': 'id-for-client' }, { 'subscribe': 'id-for-client', 'subscriptions': '[{"topic":"task","qos":2}]' }, { 'publish': 'id-for-client', 'topic': 'task', 'payload': 'result', 'qos': 2 }, { 'client-out': 'id-for-client' }, { 'clientId': 'connect' }, { 'clientId': 'subscribe', 'subscriptions': '[{"topic":"task","qos":2}]' }, { 'clientId': 'publish', 'res': 'done' }, { 'clientId': 'receive topic[task], message[result]' }, { 'clientId': 'close' }]
 
     it(`should return '${JSON.stringify(ms)}' when run test'`, async function() {
         let r = await test()

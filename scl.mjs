@@ -1,5 +1,7 @@
 import w from 'wsemi'
 import WPubsubClient from './src/WPubsubClient.mjs'
+// import WPubsubClient from './dist/w-pubsub-client.umd.js'
+// import WPubsubClient from './dist/w-pubsub-client.wk.umd.js'
 
 
 let test = async () => {
@@ -15,6 +17,7 @@ let test = async () => {
         clientId,
     }
     let wpc = new WPubsubClient(opt)
+    // console.log('wpc', wpc)
 
     let topic = 'task'
 
@@ -22,13 +25,26 @@ let test = async () => {
         console.log('connect')
         ms.push({ clientId: `connect` })
     })
-    wpc.on(topic, (msg) => {
-        console.log(`topic[${topic}]`, msg.toString())
-        ms.push({ clientId: `receive topic[${topic}]` })
+    wpc.on('reconnect', () => {
+        console.log('reconnect')
+    })
+    wpc.on('offline', () => {
+        console.log('offline')
+    })
+    // wpc.on(topic, (msg) => {
+    //     console.log(`topic[${topic}]`, msg.toString())
+    //     ms.push({ clientId: `receive topic[${topic}]` })
+    // })
+    wpc.on('message', ({ topic, message }) => {
+        console.log(`message`, topic, message, message.toString())
+        ms.push({ clientId: `receive topic[${topic}], message[${message.toString()}]` })
     })
     wpc.on('close', () => {
         console.log('close')
         ms.push({ clientId: `close` })
+    })
+    wpc.on('end', () => {
+        console.log('end')
     })
     wpc.on('error', (err) => {
         console.log('error', err)
@@ -54,6 +70,10 @@ let test = async () => {
 
     setTimeout(async() => {
         await wpc.clear()
+        try { //使用worker版時要另外呼叫terminate中止
+            wpc.terminate()
+        }
+        catch (err) {}
         console.log('ms', ms)
         pm.resolve(ms)
     }, 5000)

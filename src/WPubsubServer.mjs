@@ -10,6 +10,7 @@ import ispint from 'wsemi/src/ispint.mjs'
 import isearr from 'wsemi/src/isearr.mjs'
 import cstr from 'wsemi/src/cstr.mjs'
 import cint from 'wsemi/src/cint.mjs'
+import j2o from 'wsemi/src/j2o.mjs'
 import evem from 'wsemi/src/evem.mjs'
 
 
@@ -71,7 +72,7 @@ import evem from 'wsemi/src/evem.mjs'
  *         await wps.clear()
  *         console.log('ms', ms)
  *         pm.resolve(ms)
- *     }, 15000)
+ *     }, 6000)
  *
  *     return pm
  * }
@@ -92,6 +93,9 @@ import evem from 'wsemi/src/evem.mjs'
  *
  */
 function WPubsubServer(opt = {}) {
+
+    //keyMsg
+    let keyMsg = '__msg__'
 
     //port
     let port = get(opt, 'port')
@@ -200,7 +204,18 @@ function WPubsubServer(opt = {}) {
     broker.on('publish', (packet, client) => {
         if (iseobj(client)) {
             // console.log('client publish', `client.id[${client.id}]`, `topic[${packet.topic}]`, `qos[${packet.qos}]`, packet.payload.toString())
-            ev.emit('publish', client.id, packet.topic, packet.payload, packet.qos)
+            let _message = ''
+            try {
+                let j = packet.payload.toString() //mqtt接收payload時會變成Buffer, 得轉payload.toString()
+                // console.log('payload j', j)
+                let o = j2o(j)
+                // console.log('payload o', o)
+                _message = get(o, keyMsg, '')
+            }
+            catch (err) {
+                console.log(err)
+            }
+            ev.emit('publish', client.id, packet.topic, _message, packet.qos)
         }
     })
 
