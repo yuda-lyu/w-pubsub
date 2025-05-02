@@ -10,7 +10,7 @@
 		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 	}
 
-	var tempBVTuoBQIcnHc3zLrftD75om4yvwaTDTMNw = {exports: {}};
+	var tempZ4EzTZoNd2uxuFXw6XAL5o7D3sA32b30Nw = {exports: {}};
 
 	(function(module,exports){(function(global,factory){module.exports=factory(require$$0);})(commonjsGlobal,function(worker_threads){function getDefaultExportFromCjs(x){return x&&x.__esModule&&Object.prototype.hasOwnProperty.call(x,'default')?x['default']:x;}var eventemitter3={exports:{}};(function(module){var has=Object.prototype.hasOwnProperty,prefix='~';/**
 			   * Constructor to create a storage for our `EE` objects.
@@ -183,7 +183,7 @@
 	if(code!==1){emitError('exit code['+code+'] !== 1');}});//init
 	init([...arguments]);//若直接用arguments會無法轉譯
 	ev.subscribe=subscribe;ev.unsubscribe=unsubscribe;ev.publish=publish;ev.clear=clear;ev.terminate=terminate;return ev;}//set ww
-	ww=wrapWorker;}protectShell();try{process.on('unhandledRejection',err=>{console.log('outer:unhandledRejection',err);});process.on('uncaughtException',err=>{console.log('outer:uncaughtException',err);});process.on('uncaughtExceptionMonitor',err=>{console.log('outer:uncaughtExceptionMonitor',err);});}catch(err){}var ww$1=ww;return ww$1;});})(tempBVTuoBQIcnHc3zLrftD75om4yvwaTDTMNw);var tempBVTuoBQIcnHc3zLrftD75om4yvwaTDTMNwExports=tempBVTuoBQIcnHc3zLrftD75om4yvwaTDTMNw.exports;var nw = /*@__PURE__*/getDefaultExportFromCjs(tempBVTuoBQIcnHc3zLrftD75om4yvwaTDTMNwExports);
+	ww=wrapWorker;}protectShell();try{process.on('unhandledRejection',err=>{console.log('outer:unhandledRejection',err);});process.on('uncaughtException',err=>{console.log('outer:uncaughtException',err);});process.on('uncaughtExceptionMonitor',err=>{console.log('outer:uncaughtExceptionMonitor',err);});}catch(err){}var ww$1=ww;return ww$1;});})(tempZ4EzTZoNd2uxuFXw6XAL5o7D3sA32b30Nw);var tempZ4EzTZoNd2uxuFXw6XAL5o7D3sA32b30NwExports=tempZ4EzTZoNd2uxuFXw6XAL5o7D3sA32b30Nw.exports;var nw = /*@__PURE__*/getDefaultExportFromCjs(tempZ4EzTZoNd2uxuFXw6XAL5o7D3sA32b30NwExports);
 
 	return nw;
 
