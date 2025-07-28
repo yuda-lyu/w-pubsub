@@ -10,7 +10,7 @@ let fdTar = './dist'
 async function core() {
 
     await rollupFiles({
-        fns: ['WPubsubServer.mjs', 'WPubsubClient.mjs'],
+        fns: ['WPubsubServer.mjs', 'WPubsubClient.mjs', 'WPubsubClientComu.mjs'],
         fdSrc,
         fdTar,
         nameDistType: 'kebabCase',
@@ -59,6 +59,56 @@ async function core() {
         ],
         fpSrc: path.resolve(fdSrc, 'WPubsubClient.mjs'), //原始檔案路徑
         fpTar: path.resolve(fdTar, 'w-pubsub-client.wk.umd.js'), //檔案輸出路徑
+        formatOut: 'umd',
+        runin: 'nodejs',
+        bMinify: false,
+        globals: {
+            'path': 'path',
+            'fs': 'fs',
+            'aedes': 'aedes',
+            'aedes-persistence-level': 'aedes-persistence-level',
+            'net': 'net',
+            'level': 'level',
+            'mqtt': 'mqtt',
+        },
+        external: [
+            'path',
+            'fs',
+            'aedes',
+            'aedes-persistence-level',
+            'net',
+            'level',
+            'mqtt',
+        ],
+        mainFields: ['main'], //mqtt入口須指定main, 才能直接轉譯出給nodejs用之clinet程式
+    })
+        .catch((err) => {
+            console.log(err)
+        })
+
+    await rollupWorker({
+        name: 'WPubsubClientComu', //原模組名稱, 將來會掛於winodw下, nodejs引入後為自行決定名稱
+        type: 'function', //原模組輸出為函數, 可傳入參數初始化
+        execFunctionByInstance: false, //原模組為計算函數回傳結果, 故設為false使回傳結果為繼承eventemitter3物件
+        funNames: [
+            'subscribe',
+            'unsubscribe',
+            'publish',
+            'clear',
+            'reqServiceFunc',
+        ],
+        evNames: [ //由內部emit外部的函數得手動提供
+            'connect',
+            'reconnect',
+            'message',
+            'error',
+            'offline',
+            'close',
+            'end',
+            'procFun',
+        ],
+        fpSrc: path.resolve(fdSrc, 'WPubsubClientComu.mjs'), //原始檔案路徑
+        fpTar: path.resolve(fdTar, 'w-pubsub-client-comu.wk.umd.js'), //檔案輸出路徑
         formatOut: 'umd',
         runin: 'nodejs',
         bMinify: false,

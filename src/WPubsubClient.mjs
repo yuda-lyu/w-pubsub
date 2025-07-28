@@ -13,15 +13,15 @@ import waitFun from 'wsemi/src/waitFun.mjs'
 
 
 /**
- * 建立一個 MQTT 客戶端，支援持久連線、Token 驗證、自動重連、訂閱與發佈功能。
+ * 建立一個 MQTT 客戶端，支援持久連線、Token 驗證、自動重連、訂閱與發佈功能
  *
  * @param {Object} [opt={}] - 設定選項
- * @param {string} [opt.url='mqtt://localhost'] - MQTT broker 連線 URL
- * @param {number} [opt.port=8080] - Broker 連線 port
- * @param {string} [opt.token=''] - 連線時用來驗證的 Token
- * @param {string} [opt.clientId] - 指定 Client ID，若未指定則自動產生
- * @param {number} [opt.timeReconnect=2000] - 斷線後重新連線的間隔時間（毫秒）
- * @returns {Object} - 傳回一個具有 `subscribe`、`publish` 方法與事件的物件 (EventEmitter-like)
+ * @param {String} [opt.url='mqtt://localhost'] - MQTT broker 連線 URL
+ * @param {Number} [opt.port=8080] - Broker 連線 port
+ * @param {String} [opt.token=''] - 連線時用來驗證的 Token
+ * @param {String} [opt.clientId] - 指定 Client ID，若未指定則自動產生
+ * @param {Number} [opt.timeReconnect=2000] - 斷線後重新連線的間隔時間（毫秒）
+ * @returns {Object} - 傳回一個具有 `subscribe`、`unsubscribe`、`publish`、`clear` 方法的事件物件
  * @example
  *
  * import w from 'wsemi'
@@ -56,13 +56,9 @@ import waitFun from 'wsemi/src/waitFun.mjs'
  *     wpc.on('offline', () => {
  *         console.log('offline')
  *     })
- *     // wpc.on(topic, (msg) => {
- *     //     console.log(`topic[${topic}]`, msg.toString())
- *     //     ms.push({ clientId: `receive topic[${topic}]` })
- *     // })
  *     wpc.on('message', ({ topic, message }) => {
- *         console.log(`message`, topic, message, message.toString())
- *         ms.push({ clientId: `receive topic[${topic}], message[${message.toString()}]` })
+ *         console.log(`message`, topic, message)
+ *         ms.push({ clientId: `receive topic[${topic}], message[${message}]` })
  *     })
  *     wpc.on('close', () => {
  *         console.log('close')
@@ -227,6 +223,11 @@ function WPubsubClient(opt = {}) {
         //pm
         let pm = genPm()
 
+        //wait online
+        await waitFun(() => {
+            return online
+        })
+
         //取消訂閱主題
         client.unsubscribe(topic, (err) => {
             if (err) {
@@ -246,6 +247,11 @@ function WPubsubClient(opt = {}) {
         //0, 最多送一次
         //1, 至少送一次, 保證送到但可能重複送
         //2, 剛好送一次, 保證只送一次且不重複
+
+        //wait online
+        await waitFun(() => {
+            return online
+        })
 
         //payload, 型別可支援: String, Buffer, Uint8Array, Number, Object(要JSON.stringify)
         let payload = JSON.stringify({ [keyMsg]: msg }) //封裝至msg可簡化使用型別, 僅支援Object, String, Number, Boolean

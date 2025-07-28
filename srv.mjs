@@ -30,8 +30,8 @@ let test = () => {
         ms.push({ 'subscribe': clientId, 'subscriptions': JSON.stringify(subscriptions) })
     })
     wps.on('publish', (clientId, topic, payload, qos) => {
-        console.log('publish', clientId, topic, payload.toString(), qos)
-        ms.push({ 'publish': clientId, topic, 'payload': payload.toString(), qos })
+        console.log('publish', clientId, topic, payload, qos)
+        ms.push({ 'publish': clientId, topic, payload, qos })
     })
     wps.on('server-error', (err) => {
         console.log('server-error', err)
@@ -47,7 +47,7 @@ let test = () => {
         await wps.clear()
         console.log('ms', ms)
         pm.resolve(ms)
-    }, 6000)
+    }, 11116000)
 
     return pm
 }

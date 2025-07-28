@@ -31,13 +31,9 @@ let test = async () => {
     wpc.on('offline', () => {
         console.log('offline')
     })
-    // wpc.on(topic, (msg) => {
-    //     console.log(`topic[${topic}]`, msg.toString())
-    //     ms.push({ clientId: `receive topic[${topic}]` })
-    // })
     wpc.on('message', ({ topic, message }) => {
-        console.log(`message`, topic, message, message.toString())
-        ms.push({ clientId: `receive topic[${topic}], message[${message.toString()}]` })
+        console.log(`message`, topic, message)
+        ms.push({ clientId: `receive topic[${topic}], message[${message}]` })
     })
     wpc.on('close', () => {
         console.log('close')

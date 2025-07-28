@@ -15,7 +15,7 @@ import evem from 'wsemi/src/evem.mjs'
 
 
 /**
- * 建立一個支援 Token 驗證與 LevelDB 持久化儲存的 MQTT Server (基於 Aedes)。
+ * 建立一個支援 Token 驗證與 LevelDB 持久化儲存的 MQTT Server
  *
  * @param {Object} [opt={}] - 設定參數物件
  * @param {Number} [opt.port=8080] - 要監聽的 TCP 連接埠 (預設 8080)
@@ -55,8 +55,8 @@ import evem from 'wsemi/src/evem.mjs'
  *         ms.push({ 'subscribe': clientId, 'subscriptions': JSON.stringify(subscriptions) })
  *     })
  *     wps.on('publish', (clientId, topic, payload, qos) => {
- *         console.log('publish', clientId, topic, payload.toString(), qos)
- *         ms.push({ 'publish': clientId, topic, 'payload': payload.toString(), qos })
+ *         console.log('publish', clientId, topic, payload, qos)
+ *         ms.push({ 'publish': clientId, topic, 'payload': payload, qos })
  *     })
  *     wps.on('server-error', (err) => {
  *         console.log('server-error', err)

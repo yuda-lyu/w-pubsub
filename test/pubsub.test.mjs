@@ -1,6 +1,4 @@
 import assert from 'assert'
-import fs from 'fs'
-import _ from 'lodash-es'
 import w from 'wsemi'
 import WPubsubServer from '../src/WPubsubServer.mjs'
 import WPubsubClient from '../src/WPubsubClient.mjs'
@@ -37,8 +35,8 @@ describe('pubsub', function() {
                 ms.push({ 'subscribe': clientId, 'subscriptions': JSON.stringify(subscriptions) })
             })
             wps.on('publish', (clientId, topic, payload, qos) => {
-                // console.log('publish', clientId, topic, payload.toString(), qos)
-                ms.push({ 'publish': clientId, topic, 'payload': payload.toString(), qos })
+                // console.log('publish', clientId, topic, payload, qos)
+                ms.push({ 'publish': clientId, topic, payload, qos })
             })
             // wps.on('server-error', (err) => {
             //     console.log('server-error', err)
@@ -96,13 +94,9 @@ describe('pubsub', function() {
                 // console.log('connect')
                 ms.push({ clientId: `connect` })
             })
-            // wpc.on(topic, (msg) => {
-            //     // console.log(`topic[${topic}]`, msg.toString())
-            //     ms.push({ clientId: `receive topic[${topic}]` })
-            // })
             wpc.on('message', ({ topic, message }) => {
-                console.log(`message`, topic, message.toString())
-                ms.push({ clientId: `receive topic[${topic}], message[${message.toString()}]` })
+                // console.log(`message`, topic, message)
+                ms.push({ clientId: `receive topic[${topic}], message[${message}]` })
             })
             wpc.on('close', () => {
                 // console.log('close')
@@ -159,12 +153,13 @@ describe('pubsub', function() {
     let test = async() => {
         let [msServer, msClient] = await Promise.all([
             testServer(),
-            testClient()
+            testClient(),
         ])
         let ms = [
             ...msServer,
             ...msClient,
         ]
+        w.fsDeleteFolder('./_db')
         // fs.writeFileSync('./temp.json', JSON.stringify(ms), 'utf8')
         return ms
     }
