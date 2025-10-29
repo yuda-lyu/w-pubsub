@@ -12,6 +12,7 @@ A tool for publish(pub) and subscribe(sub).
 To view documentation or get support, visit [docs](https://yuda-lyu.github.io/w-pubsub/global.html).
 
 ## Installation
+
 ### Using npm(ES6 module):
 ```alias
 npm i w-pubsub
