@@ -1,6 +1,6 @@
 {
   "name": "w-pubsub",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "main": "dist/w-pubsub-server.umd.js",
   "dependencies": {
     "aedes": "^0.51.3",

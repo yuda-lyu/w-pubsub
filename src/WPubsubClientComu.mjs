@@ -22,7 +22,34 @@ import WPubsubClient from './WPubsubClient.mjs'
  * @param {Number} [opt.timeReconnect=2000] - 斷線後重新連線的間隔時間（毫秒）
  * @returns {Object} - 傳回一個具有 `subscribe`、`unsubscribe`、`publish`、`clear` 方法的事件物件
  * @example
-
+ *
+ * import WPubsubClientComu from './src/WPubsubClientComu.mjs'
+ *
+ * //服務端A, 提供service-for-A之calc-A
+ * let wpcA = new WPubsubClientComu('service-for-A', ['calc-A'], {
+ *     port: 8081,
+ *     token: 'token-for-test',
+ *     clientId: 'id-for-client-A',
+ * })
+ * wpcA.on('procFun', ({ func, input, pm }) => {
+ *     if (func === 'calc-A') {
+ *         let { p1, p2 } = input
+ *         pm.resolve(`${p1}+${p2}=${p1 + p2}`)
+ *     }
+ * })
+ *
+ * //調用端B, 僅調用不提供服務
+ * let wpcB = new WPubsubClientComu('service-for-B', [], {
+ *     port: 8081,
+ *     token: 'token-for-test',
+ *     clientId: 'id-for-client-B',
+ * })
+ * let r = await wpcB.reqServiceFunc('service-for-A', 'calc-A', { p1: 1, p2: 2.5 })
+ * console.log(r)
+ * // => '1+2.5=3.5'
+ *
+ * await wpcA.clear()
+ * await wpcB.clear()
  */
 function WPubsubClientComu(serviceName, funcs, opt = {}) {
 
