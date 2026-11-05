@@ -1,6 +1,6 @@
 {
   "name": "w-pubsub",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "main": "dist/w-pubsub-server.umd.js",
   "dependencies": {
     "aedes": "^0.51.3",
@@ -9,7 +9,7 @@
     "aedes-server-factory": "^0.2.1",
     "level": "^10.0.0",
     "mqtt": "^5.13.3",
-    "wsemi": "^1.9.49"
+    "wsemi": "^1.9.51"
   },
   "devDependencies": {
     "w-package-tools": "^1.1.23"
