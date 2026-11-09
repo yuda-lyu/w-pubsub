@@ -1,18 +1,17 @@
 {
   "name": "w-pubsub",
-  "version": "1.0.46",
+  "version": "1.0.47",
   "main": "dist/w-pubsub-server.umd.js",
   "dependencies": {
-    "aedes": "^0.51.3",
-    "aedes-persistence": "^10.2.2",
-    "aedes-persistence-level": "^9.1.2",
-    "aedes-server-factory": "^0.2.1",
+    "aedes": "^1.2.0",
+    "aedes-persistence": "^11.0.0",
+    "aedes-persistence-level": "^9.2.0",
     "level": "^10.0.0",
-    "mqtt": "^5.13.3",
-    "wsemi": "^1.9.52"
+    "mqtt": "^5.16.1",
+    "wsemi": "^1.9.54"
   },
   "devDependencies": {
-    "w-package-tools": "^1.1.23"
+    "w-package-tools": "^1.1.24"
   },
   "scripts": {
     "test": "mocha --parallel \"test/*.test.mjs\" --timeout 180000",

@@ -18,6 +18,17 @@ To view documentation or get support, visit [docs](https://yuda-lyu.github.io/w-
 npm i w-pubsub
 ```
 
+### Upgrade notes (server now runs on aedes 1.x)
+The server side was moved from aedes 0.51 to aedes 1.2 (0.x has unfixed security advisories, e.g. a single packet with `__proto__` or `constructor` as topic or clientId crashed the broker). The public API (`new WPubsubServer(opt)`, events, `clear()`, and the client classes) keeps its signatures; what you may need to adapt:
+
+- **Node.js >= 20 is required** (aedes 1.x is ESM only). The UMD build (`dist/w-pubsub-server.umd.js`) loads aedes with `require`, so it needs Node.js >= 20.19 or >= 22.12 (`require(esm)`); on older Node use the ES module source.
+- **Start-up is asynchronous inside, the constructor is still synchronous.** The port starts listening immediately as before; connections are held until the broker is ready, so clients may connect right after `server-listen`.
+- **`clear()` now also closes the LevelDB storage**, so a new `WPubsubServer` can use the same `storage` right after `await wps.clear()` in the same process.
+- **A broker that fails to start** (for example, `storage` is locked by another process) emits `broker-error` (connections are closed); it no longer ends the process with an unhandled error.
+- aedes 1.x defaults: `drainTimeout` 60000 ms (a client that does not drain its socket within 60 s is disconnected) and `maxInflightInbound` 1000.
+- Data written by older versions (`storage`) can be opened in place; subscriptions and offline QoS 1/2 messages are kept.
+- `aedes`, `aedes-persistence` and `aedes-persistence-level` must be upgraded together (this package declares `^1.2.0`, `^11.0.0`, `^9.2.0`); the client uses `mqtt` `^5.16.1`. With `mqtt` 5.16 a client whose CONNECT is refused (for example a wrong token) gets `error` then `close` and does not reconnect automatically.
+
 #### Example for Server:
 > **Link:** [[dev source code](https://github.com/yuda-lyu/w-pubsub/blob/master/srv.mjs)]
 ```alias

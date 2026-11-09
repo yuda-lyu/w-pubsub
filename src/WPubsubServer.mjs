@@ -1,4 +1,4 @@
-import Aedes from 'aedes'
+import { Aedes } from 'aedes'
 import aedesPersistenceLevel from 'aedes-persistence-level'
 import net from 'net'
 import { Level } from 'level'
@@ -16,6 +16,9 @@ import evem from 'wsemi/src/evem.mjs'
 
 /**
  * 建立一個支援 Token 驗證與 LevelDB 持久化儲存的 MQTT Server
+ *
+ * 建構為同步, 內部非同步啟動 aedes broker(須Node.js 20以上); 埠於建構時即開始監聽, 連線待broker就緒才處理.
+ * broker啟動失敗(如storage被他處占用)以'broker-error'事件通知; clear()依序關閉broker, server與LevelDB.
  *
  * @param {Object} [opt={}] - 設定參數物件
  * @param {Number} [opt.port=8080] - 要監聽的 TCP 連接埠 (預設 8080)
@@ -117,57 +120,132 @@ function WPubsubServer(opt = {}) {
     }
     let stTokens = new Set(tokens) //可用的合法 Token 列表
 
+    //ev
+    let ev = evem()
+
     //db
     let db = new Level(storage)
 
     //persistenceInstance
     let persistenceInstance = aedesPersistenceLevel(db)
 
-    //broker
-    let broker = Aedes({
-        persistence: persistenceInstance,
-        authenticate: (client, username, password, callback) => {
-            // console.log('authenticate', client.id, username, password)
-            // console.log('client.id', client.id)
-            // console.log('username', username)
-            // console.log('password', password)
+    //authenticate
+    let authenticate = (client, username, password, callback) => {
+        // console.log('authenticate', client.id, username, password)
+        // console.log('client.id', client.id)
+        // console.log('username', username)
+        // console.log('password', password)
 
-            //check
-            if (size(tokens) === 0) {
-                return callback(null, true)
-            }
+        //check
+        if (size(tokens) === 0) {
+            return callback(null, true)
+        }
 
-            //check
-            if (!isestr(username)) {
-                let err = new Error('missing token')
-                err.returnCode = 4 // MQTT 3.1.1: "Connection Refused: bad username or password"
-                return callback(err, false)
-            }
-
-            //token
-            let token = cstr(username)
-
-            //check
-            if (stTokens.has(token)) {
-                // console.log('client conn', `token[${token}]`, `client.id[${client.id}]`)
-                return callback(null, true)
-            }
-
-            //err
-            let err = new Error('invalid token')
-            err.returnCode = 4
-            // console.log('client deny', `token[${token}]`, `client.id[${client.id}]`)
+        //check
+        if (!isestr(username)) {
+            let err = new Error('missing token')
+            err.returnCode = 4 // MQTT 3.1.1: "Connection Refused: bad username or password"
             return callback(err, false)
         }
-    })
 
-    //server
-    let server = net.createServer(broker.handle)
+        //token
+        let token = cstr(username)
 
-    //listen
-    server.listen(port, () => {
-        // console.log(`Server started and listening on port ${port}`)
-        ev.emit('server-listen', { port })
+        //check
+        if (stTokens.has(token)) {
+            // console.log('client conn', `token[${token}]`, `client.id[${client.id}]`)
+            return callback(null, true)
+        }
+
+        //err
+        let err = new Error('invalid token')
+        err.returnCode = 4
+        // console.log('client deny', `token[${token}]`, `client.id[${client.id}]`)
+        return callback(err, false)
+    }
+
+    //broker, 於start內建立
+    let broker = null
+
+    //start, aedes 1.x須await Aedes.createBroker建立broker(持久化setup為async), 故broker啟動流程為非同步, 對外仍維持同步建構
+    let start = async () => {
+
+        //broker
+        broker = await Aedes.createBroker({
+            persistence: persistenceInstance,
+            authenticate,
+        })
+
+        //客戶端連線
+        broker.on('client', (client) => {
+            // console.log('client in', `client.id[${client.id}]`)
+            ev.emit('client-in', client.id)
+
+            //error
+            client.on('error', (err) => {
+                // console.error(`Client error [${client.id}]:`, err)
+                ev.emit('client-error', client.id, err)
+            })
+
+        })
+
+        //客戶端訂閱
+        broker.on('subscribe', (subscriptions, client) => {
+            if (iseobj(client)) {
+                // console.log('client subscribe', `client.id[${client.id}]`, `topics[${subscriptions.map(s => s.topic).join(', ')}]`)
+                ev.emit('subscribe', client.id, subscriptions)
+            }
+        })
+
+        //客戶端發佈訊息
+        broker.on('publish', (packet, client) => {
+            if (iseobj(client)) {
+                // console.log('client publish', `client.id[${client.id}]`, `topic[${packet.topic}]`, `qos[${packet.qos}]`, packet.payload.toString())
+                let _message = ''
+                try {
+                    let j = packet.payload.toString() //mqtt接收payload時會變成Buffer, 得轉payload.toString()
+                    // console.log('payload j', j)
+                    let o = j2o(j)
+                    // console.log('payload o', o)
+                    _message = get(o, keyMsg, '')
+                }
+                catch (err) {
+                    console.log(err)
+                }
+                ev.emit('publish', client.id, packet.topic, _message, packet.qos)
+            }
+        })
+
+        //客戶端斷線
+        broker.on('clientDisconnect', (client) => {
+            // console.log('client out', `client.id[${client.id}]`)
+            ev.emit('client-out', client.id)
+        })
+
+        //error
+        broker.on('error', (err) => {
+            // console.error('Broker error:', err)
+            ev.emit('broker-error', err) // 也可以轉發出去
+        })
+
+    }
+
+    //pmStart, 啟動失敗(如持久化資料庫無法開啟)時以broker-error通知, 不使未捕捉之拒絕發生
+    let pmStart = start()
+        .catch((err) => {
+            ev.emit('broker-error', err)
+        })
+
+    //server, 與0.x相同於建構時立即監聽, 連線先暫停至broker就緒才交給broker.handle, 使server-listen後即可連線, 不會因broker啟動中而被拒絕
+    let server = net.createServer({ pauseOnConnect: true }, (socket) => {
+        pmStart.then(() => {
+            if (broker && !broker.closed) {
+                broker.handle(socket)
+            }
+            else {
+                socket.destroy() //broker啟動失敗或已關閉
+            }
+        })
     })
 
     //error
@@ -176,64 +254,18 @@ function WPubsubServer(opt = {}) {
         ev.emit('server-error', err) // 也可以轉發出去
     })
 
-    //ev
-    let ev = evem()
-
-    //客戶端連線
-    broker.on('client', (client) => {
-        // console.log('client in', `client.id[${client.id}]`)
-        ev.emit('client-in', client.id)
-
-        //error
-        client.on('error', (err) => {
-            // console.error(`Client error [${client.id}]:`, err)
-            ev.emit('client-error', client.id, err)
-        })
-
-    })
-
-    //客戶端訂閱
-    broker.on('subscribe', (subscriptions, client) => {
-        if (iseobj(client)) {
-            // console.log('client subscribe', `client.id[${client.id}]`, `topics[${subscriptions.map(s => s.topic).join(', ')}]`)
-            ev.emit('subscribe', client.id, subscriptions)
-        }
-    })
-
-    //客戶端發佈訊息
-    broker.on('publish', (packet, client) => {
-        if (iseobj(client)) {
-            // console.log('client publish', `client.id[${client.id}]`, `topic[${packet.topic}]`, `qos[${packet.qos}]`, packet.payload.toString())
-            let _message = ''
-            try {
-                let j = packet.payload.toString() //mqtt接收payload時會變成Buffer, 得轉payload.toString()
-                // console.log('payload j', j)
-                let o = j2o(j)
-                // console.log('payload o', o)
-                _message = get(o, keyMsg, '')
-            }
-            catch (err) {
-                console.log(err)
-            }
-            ev.emit('publish', client.id, packet.topic, _message, packet.qos)
-        }
-    })
-
-    //客戶端斷線
-    broker.on('clientDisconnect', (client) => {
-        // console.log('client out', `client.id[${client.id}]`)
-        ev.emit('client-out', client.id)
-    })
-
-    //error
-    broker.on('error', (err) => {
-        // console.error('Broker error:', err)
-        ev.emit('broker-error', err) // 也可以轉發出去
+    //listen
+    server.listen(port, () => {
+        // console.log(`Server started and listening on port ${port}`)
+        ev.emit('server-listen', { port })
     })
 
     //closeBroker
     let closeBroker = () => {
         return new Promise((resolve, reject) => {
+            if (!broker) {
+                return resolve()
+            }
             broker.close((err) => {
                 if (err) {
                     return reject(err)
@@ -246,6 +278,9 @@ function WPubsubServer(opt = {}) {
     //closeServer
     let closeServer = () => {
         return new Promise((resolve, reject) => {
+            if (!server || !server.listening) {
+                return resolve()
+            }
             server.close((err) => {
                 if (err) {
                     return reject(err)
@@ -255,10 +290,17 @@ function WPubsubServer(opt = {}) {
         })
     }
 
+    //closeDb, aedes 1.x之broker.close不會關閉持久化資料庫, 須自行關閉才能釋放LevelDB鎖供同路徑重啟
+    let closeDb = async () => {
+        await db.close()
+    }
+
     //clear
     let clear = async () => {
+        await pmStart //等待啟動流程結束, 避免啟動中呼叫clear而殘留broker或埠
         await closeBroker()
         await closeServer()
+        await closeDb()
     }
 
     //save
