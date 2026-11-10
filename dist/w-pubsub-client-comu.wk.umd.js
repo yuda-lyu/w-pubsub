@@ -10,7 +10,7 @@
 		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 	}
 
-	var temp5HKeuaY58gHbgFpcUO03cfQXXDFBIiOcNw = {exports: {}};
+	var tempUfHmb08rUCZItE68T8ADt2trgbalcEz4Nw = {exports: {}};
 
 	(function (module, exports) {
 	  (function (global, factory) {
@@ -364,8 +364,7 @@
 	        p.reject = reject;
 	        return p;
 	      }
-	      function genID() {
-	        let len = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10;
+	      function genID(len = 10) {
 	        let uuid = [];
 	        let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
 	        let radix = chars.length;
@@ -596,9 +595,9 @@
 	    var ww$1 = ww;
 	    return ww$1;
 	  });
-	})(temp5HKeuaY58gHbgFpcUO03cfQXXDFBIiOcNw);
-	var temp5HKeuaY58gHbgFpcUO03cfQXXDFBIiOcNwExports = temp5HKeuaY58gHbgFpcUO03cfQXXDFBIiOcNw.exports;
-	var nw = /*@__PURE__*/getDefaultExportFromCjs(temp5HKeuaY58gHbgFpcUO03cfQXXDFBIiOcNwExports);
+	})(tempUfHmb08rUCZItE68T8ADt2trgbalcEz4Nw);
+	var tempUfHmb08rUCZItE68T8ADt2trgbalcEz4NwExports = tempUfHmb08rUCZItE68T8ADt2trgbalcEz4Nw.exports;
+	var nw = /*@__PURE__*/getDefaultExportFromCjs(tempUfHmb08rUCZItE68T8ADt2trgbalcEz4NwExports);
 
 	return nw;
 
