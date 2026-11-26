@@ -1,5 +1,5 @@
 /*!
- * w-pubsub-client-comu v1.0.71
+ * w-pubsub-client-comu v1.0.72
  * (c) 2018-2021 yuda-lyu(semisphere)
  * Released under the MIT License.
  */
